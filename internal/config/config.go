@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"os"
@@ -23,4 +23,12 @@ func getRootPath() string {
 		}
 		currentDir = parentDir
 	}
+}
+
+// CONFIG: Application configuration, modify as needed
+var AppConfig = map[string]string{
+	"BUSY_REDIS_KEY":       "busy",
+	"FREE_REDIS_KEY":       "free",
+	"UNIQUE_STRING_LENGTH": "3",
+	"ROOT_PATH":            getRootPath(),
 }
