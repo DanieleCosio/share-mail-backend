@@ -6,24 +6,15 @@ import (
 	"os"
 	"path"
 	"sharemail/internal/components"
+	"sharemail/internal/config"
 
 	"github.com/a-h/templ"
-	"github.com/joho/godotenv"
 )
-
-func loadEnv(projectRootPath string) {
-	filePath := path.Join(projectRootPath, "/.env")
-	err := godotenv.Load(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 func Start() {
 	// Load environment variables from .env file
-	projectRootPath := getRootPath()
-	staticFilesPath := path.Join(projectRootPath, "/web/static/")
-	loadEnv(projectRootPath)
+	staticFilesPath := path.Join(config.AppConfig["ROOT_PATH"], "/web/static/")
+	config.LoadEnv()
 	port := os.Getenv("APP_PORT")
 	component := components.Hello("World")
 
