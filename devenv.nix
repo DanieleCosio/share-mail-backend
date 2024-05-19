@@ -3,9 +3,18 @@
   languages.go.enable = true;
 
   packages = [ pkgs.coreutils pkgs.go-migrate ];
+
   services.postgres = {
     enable = true;
     initialDatabases = [{ name = "share_mail"; }];
+  };
+
+  services.redis.enable = true;
+
+  pre-commit.hooks = {
+    gofmt.enable = true;
+    govet.enable = true;
+    gotest.enable = true;
   };
 
   scripts = {
@@ -15,6 +24,10 @@
 
     db-drop.exec = ''
       devenv processes stop && rm -r .devenv/state/postgres && devenv up -d
+    '';
+
+    redis-drop.exec = ''
+      redis-cli -n 0 FLUSHALL
     '';
   };
 
