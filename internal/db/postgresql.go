@@ -1,48 +1,74 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"os"
+	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type SqlConfig struct {
-	User     string
-	Password string
-	Database string
-	Host     string
-	Port     string
-}
+var pool *pgxpool.Pool
 
-func GetSqlConnection() (*sql.DB, error) {
-	config := SqlConfig{
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_NAME"),
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
+func GetSqlConnection() (*pgxpool.Conn, error) {
+	if pool == nil {
+		poolConfig := getPoolConfig()
+		tmp, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
+		pool = tmp
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	connStr := fmt.Sprintf(
-		"user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
-		config.User,
-		config.Password,
-		config.Database,
-		config.Host,
-		config.Port,
-	)
-
-	conn, err := sql.Open("postgres", connStr)
+	conn, err := pool.Acquire(context.Background())
 	if err != nil {
+		conn.Release()
 		return nil, err
 	}
 
-	err = conn.Ping()
+	err = conn.Ping(context.Background())
 	if err != nil {
+		conn.Release()
 		return nil, err
 	}
 
 	return conn, nil
+}
+
+func getPoolConfig() *pgxpool.Config {
+	// Pool configuration, change these values to your needs
+	const maxConns = 5
+	const minConns = 1
+	const maxConnLifetime = time.Hour
+	const maxConnIdleTime = time.Minute * 30
+	const healthCheckPeriod = time.Minute
+
+	connStr := fmt.Sprintf(
+		"dbname=%s host=%s port=%s sslmode=disable",
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+	)
+
+	if os.Getenv("DB_USER") != "" {
+		connStr += fmt.Sprintf(" user=%s", os.Getenv("DB_USER"))
+	}
+
+	if os.Getenv("DB_PASSWORD") != "" {
+		connStr += fmt.Sprintf(" password=%s", os.Getenv("DB_PASSWORD"))
+	}
+
+	poolConfig, err := pgxpool.ParseConfig(connStr)
+	if err != nil {
+		panic(err)
+	}
+
+	poolConfig.MaxConns = maxConns
+	poolConfig.MinConns = minConns
+	poolConfig.MaxConnLifetime = maxConnLifetime
+	poolConfig.MaxConnIdleTime = maxConnIdleTime
+	poolConfig.HealthCheckPeriod = healthCheckPeriod
+
+	return poolConfig
 }
