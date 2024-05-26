@@ -2,7 +2,7 @@
 {
   languages.go.enable = true;
 
-  packages = [ pkgs.coreutils pkgs.go-migrate ];
+  packages = [ pkgs.coreutils pkgs.go-migrate pkgs.sqlc];
 
   services.postgres = {
     enable = true;
@@ -23,7 +23,7 @@
     '';
 
     db-drop.exec = ''
-      devenv processes stop && rm -r .devenv/state/postgres && devenv up -d
+      rm -r .devenv/state/postgres
     '';
 
     redis-drop.exec = ''
