@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sharemail/internal/orm"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -34,6 +35,16 @@ func GetSqlConnection() (*pgxpool.Conn, error) {
 	}
 
 	return conn, nil
+}
+
+func GetOrmConnection() (*orm.Queries, error) {
+	sqlConn, err := GetSqlConnection()
+	if err != nil {
+		fmt.Printf("%s", err)
+		return nil, err
+	}
+
+	return orm.New(sqlConn), nil
 }
 
 func getPoolConfig() *pgxpool.Config {
