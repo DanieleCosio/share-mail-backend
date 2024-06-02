@@ -1,10 +1,14 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"sharemail/internal/config"
 	"sharemail/internal/db"
+	"sharemail/internal/orm"
 )
 
 func getEmailLink(w http.ResponseWriter, r *http.Request) {
@@ -28,28 +32,56 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 	log.Printf("RequestAccountOwner: %s\n", messageData.RequestAccountOwner)
 	log.Printf("MessageHtml: %s\n", messageData.MessageHtml)
 
-	sqlConn, err := db.GetSqlConnection()
+	redisClient, err := db.GetRedisConnection()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("%s", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
-	id := 0
-	query := `
-		INSERT INTO email_link (owner_email, message_html) 
-		VALUES ($1, $2)
-		RETURNING id
-	`
-	err = sqlConn.QueryRow(
-		query,
-		messageData.RequestAccountOwner,
-		messageData.MessageHtml,
-	).Scan(&id)
-
+	ctx := context.Background()
+	urlHash, err := redisClient.RPop(ctx, config.AppConfig["FREE_REDIS_KEY"]).Result()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("%s", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
-	defer sqlConn.Close()
+	sqlOrm, err := db.GetOrmConnection()
+	if err != nil {
+		fmt.Printf("%s", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	email, err := sqlOrm.CreateEmail(ctx, orm.CreateEmailParams{
+		OwnerEmail: messageData.RequestAccountOwner,
+		EmailHtml:  messageData.MessageHtml,
+		UrlHash:    urlHash,
+	})
+	sqlOrm = nil
+
+	if err != nil {
+		fmt.Printf("%s", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Email ID: %d\n", email.ID)
+
+	redisClient.LPush(ctx, config.AppConfig["BUSY_REDIS_KEY"], urlHash)
+	expirationDate := email.CreatedAt.Time.AddDate(0, 0, 2)
+
+	jsonResponse := GetEmailLinkResponse{
+		Url: fmt.Sprintf(
+			"%s/%s/%s",
+			config.AppConfig["BASE_URL"],
+			config.AppConfig["EMAILS_LINKS_PREFIX"],
+			urlHash,
+		),
+		ExpireAt: expirationDate.Format("2006-01-02 15:04:05"),
+	}
+	jsonResponse.Dispatch(&w, jsonResponse)
 }
 
 func ping(w http.ResponseWriter, r *http.Request) {

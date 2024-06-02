@@ -31,4 +31,6 @@ var AppConfig = map[string]string{
 	"FREE_REDIS_KEY":       "free",
 	"UNIQUE_STRING_LENGTH": "3",
 	"ROOT_PATH":            getRootPath(),
+	"BASE_URL":             "http://localhost:5500",
+	"EMAILS_LINKS_PREFIX":  "share",
 }

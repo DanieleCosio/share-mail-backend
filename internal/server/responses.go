@@ -16,3 +16,9 @@ type PingResponse struct {
 	JsonResponse
 	Success bool `json:"success"`
 }
+
+type GetEmailLinkResponse struct {
+	JsonResponse
+	Url      string `json:"url"`
+	ExpireAt string `json:"expire_at"`
+}
