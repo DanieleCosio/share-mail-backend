@@ -7,6 +7,6 @@ CREATE TABLE IF NOT EXISTS
         size VARCHAR(255) NOT NULL,
         mime_type VARCHAR(255) NOT NULL,
         email_id INTEGER NOT NULL,
-        FOREIGN KEY (email_id) REFERENCES emails (id),
+        FOREIGN KEY (email_id) REFERENCES emails (id) ON DELETE CASCADE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
