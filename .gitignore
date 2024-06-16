@@ -9,10 +9,12 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 
-
 __debug*
 .env
 .vscode
 
 # SQLC generated files
 internal/orm/**
+
+# Logs
+server.log
