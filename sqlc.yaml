@@ -10,3 +10,4 @@ sql:
               package: "orm"
               sql_package: "pgx/v5"
               out: "internal/orm"
+              emit_pointers_for_null_types: true
