@@ -32,6 +32,6 @@ func Start() {
 	log.Printf("Server listening on port %s", port)
 	err := http.ListenAndServe("localhost:"+port, handler)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }

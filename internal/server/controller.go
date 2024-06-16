@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sharemail/internal/config"
 	"sharemail/internal/db"
+	"sharemail/internal/logs"
 	"sharemail/internal/orm"
 )
 
@@ -21,6 +22,7 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&messageData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		logs.Logger().Error().Err(err).Msg("Failed to decode request body")
 		return
 	}
 
@@ -34,7 +36,7 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 
 	redisClient, err := db.GetRedisConnection()
 	if err != nil {
-		fmt.Printf("%s", err)
+		logs.Logger().Error().Err(err).Msg("Failed to get Redis connection")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -42,14 +44,14 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	urlHash, err := redisClient.RPop(ctx, config.AppConfig["FREE_REDIS_KEY"]).Result()
 	if err != nil {
-		fmt.Printf("%s", err)
+		logs.Logger().Error().Err(err).Msg("Failed to get URL hash from Redis")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
 	sqlOrm, err := db.GetOrmConnection()
 	if err != nil {
-		fmt.Printf("%s", err)
+		logs.Logger().Error().Err(err).Msg("Failed to get ORM connection")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -62,7 +64,7 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 	sqlOrm = nil
 
 	if err != nil {
-		fmt.Printf("%s", err)
+		logs.Logger().Error().Err(err).Msg("Failed to create email in database")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

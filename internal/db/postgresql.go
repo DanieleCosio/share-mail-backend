@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sharemail/internal/logs"
 	"sharemail/internal/orm"
 	"time"
 
@@ -40,7 +41,7 @@ func GetSqlConnection() (*pgxpool.Conn, error) {
 func GetOrmConnection() (*orm.Queries, error) {
 	sqlConn, err := GetSqlConnection()
 	if err != nil {
-		fmt.Printf("%s", err)
+		logs.Logger().Error().Err(err).Msg("Failed to get SQL connection")
 		return nil, err
 	}
 
