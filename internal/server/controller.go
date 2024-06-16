@@ -61,6 +61,17 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 		EmailHtml:  messageData.MessageHtml,
 		UrlHash:    urlHash,
 	})
+
+	for _, attachment := range messageData.Attachments {
+		_, err = sqlOrm.CreateAttachment(ctx, orm.CreateAttachmentParams{
+			EmailID:       email.ID,
+			Name:          attachment.Name,
+			MimeType:      attachment.MimeType,
+			Size:          attachment.Size,
+			AttachmentUrl: attachment.Url,
+			PreviewUrl:    &attachment.PreviewUrl,
+		})
+	}
 	sqlOrm = nil
 
 	if err != nil {
