@@ -1,7 +1,9 @@
-CREATE TABLE IF NOT EXISTS emails (
-    id SERIAL PRIMARY KEY,
-    owner_email VARCHAR(255) NOT NULL,
-    email_html TEXT NOT NULL,
-    url_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS
+    emails (
+        id SERIAL PRIMARY KEY,
+        owner_email VARCHAR(255) NOT NULL,
+        email_html TEXT NOT NULL,
+        url_hash VARCHAR(255) NOT NULL,
+        email_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
