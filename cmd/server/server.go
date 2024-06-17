@@ -1,7 +1,7 @@
 package main
 
 import (
-	"sharemail/internal/server"
+	"sharemail/internal/server/server"
 )
 
 func main() {

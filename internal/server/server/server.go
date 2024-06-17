@@ -5,18 +5,15 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"sharemail/internal/components"
 	"sharemail/internal/config"
-
-	"github.com/a-h/templ"
-)
+	/* "sharemail/internal/server/components" */)
 
 func Start() {
 	// Load environment variables from .env file
 	staticFilesPath := path.Join(config.AppConfig["ROOT_PATH"], "/web/static/")
 	config.LoadEnv()
 	port := os.Getenv("APP_PORT")
-	component := components.Hello("World")
+	/* component := components.Hello("World") */
 
 	// Routes
 	mux := http.NewServeMux()
@@ -26,7 +23,7 @@ func Start() {
 		"/assets/",
 		http.StripPrefix("/assets/", http.FileServer(http.Dir(staticFilesPath))),
 	)
-	mux.Handle("/tests/component", templ.Handler(component))
+	/* mux.Handle("/tests/component", templ.Handler(component)) */
 	handler := addMiddlware(mux, logMiddleware)
 
 	log.Printf("Server listening on port %s", port)

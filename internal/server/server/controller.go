@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"sharemail/internal/config"
 	"sharemail/internal/db"
-	"sharemail/internal/logs"
 	"sharemail/internal/orm"
+	"sharemail/internal/server/logs"
 )
 
 func getEmailLink(w http.ResponseWriter, r *http.Request) {
