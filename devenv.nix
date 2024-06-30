@@ -9,8 +9,6 @@
     initialDatabases = [{ name = "share_mail"; }];
   };
 
-  services.redis.enable = true;
-
   pre-commit.hooks = {
     gofmt.enable = true;
     govet.enable = true;
@@ -24,10 +22,6 @@
 
     db-drop.exec = ''
       rm -r .devenv/state/postgres
-    '';
-
-    redis-drop.exec = ''
-      redis-cli -n 0 FLUSHALL
     '';
   };
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sharemail/internal/config"
 	"sharemail/internal/url"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 func main() {
 	config.LoadEnv()
 
-	length, err := strconv.Atoi(config.AppConfig["UNIQUE_STRING_LENGTH"])
+	length, err := strconv.Atoi(os.Getenv("SHORT_URLS_LENGTH"))
 	if err != nil {
 		fmt.Printf("Error converting string length to int: %s\n", err)
 		return

@@ -8,13 +8,14 @@ WHERE
 LIMIT
     1;
 
--- name: GetEmailAndAttachments :many
+-- name: LRGetEmail :many
 SELECT
     sqlc.embed(emails),
-    sqlc.embed(attachments)
-FROM
-    emails
+    sqlc.embed(attachments),
+    sqlc.embed(urls)
+FROM emails
     JOIN attachments ON emails.id = attachments.email_id
+    JOIN urls ON emails.id = urls.email_id
 WHERE
     emails.id = $1
 LIMIT
@@ -28,19 +29,35 @@ FROM
 ORDER BY
     id;
 
--- name: ListEmailsAndAttachments :many
+-- name: LRListEmails :many
 SELECT
     sqlc.embed(emails),
-    sqlc.embed(attachments)
-FROM
-    emails
+    sqlc.embed(attachments),
+    sqlc.embed(urls)
+FROM emails
     JOIN attachments ON emails.id = attachments.email_id
+    JOIN urls ON emails.id = urls.email_id
 ORDER BY
     emails.id;
 
+-- name: ListEmailsByDate :many
+SELECT
+    *
+FROM
+    emails
+WHERE
+    created_at >= $1
+ORDER BY
+    id;
+
 -- name: CreateEmail :one
 INSERT INTO
-    emails (owner_email, email_html, url_hash, email_hash)
+    emails (
+        owner_address,
+        email_subject,
+        email_html,
+        email_hash
+    )
 VALUES
     ($1, $2, $3, $4)
 RETURNING
@@ -49,9 +66,9 @@ RETURNING
 -- name: UpdateEmail :one
 UPDATE emails
 SET
-    owner_email = $2,
-    email_html = $3,
-    url_hash = $4,
+    owner_address = $2,
+    email_subject = $3,
+    email_html  = $4,
     email_hash = $5
 WHERE
     id = $1
@@ -62,3 +79,8 @@ RETURNING
 DELETE FROM emails
 WHERE
     id = $1;
+
+-- name: DeleteEmails :exec
+DELETE FROM emails
+WHERE
+    id = ANY ($1::int[]);
