@@ -21,6 +21,15 @@ WHERE
 LIMIT
     1;
 
+-- name: GetEmailByHash :one
+SELECT
+    *
+FROM
+    emails
+WHERE email_hash = sqlc.arg(email_hash)
+LIMIT
+    1;
+
 -- name: ListEmails :many
 SELECT
     *
@@ -49,6 +58,19 @@ WHERE
     created_at >= $1
 ORDER BY
     id;
+
+-- name: LRListEmailsByDate :many
+SELECT
+    sqlc.embed(emails),
+    sqlc.embed(attachments),
+    sqlc.embed(urls)
+FROM emails
+    JOIN attachments ON emails.id = attachments.email_id
+    JOIN urls ON emails.id = urls.email_id
+WHERE
+    emails.created_at >= $1
+ORDER BY
+    emails.id;
 
 -- name: CreateEmail :one
 INSERT INTO
@@ -83,4 +105,4 @@ WHERE
 -- name: DeleteEmails :exec
 DELETE FROM emails
 WHERE
-    id = ANY ($1::int[]);
+    id = ANY (sqlc.arg(ids)::int[]);
