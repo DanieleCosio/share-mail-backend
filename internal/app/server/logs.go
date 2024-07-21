@@ -1,4 +1,4 @@
-package logs
+package server
 
 import (
 	"os"

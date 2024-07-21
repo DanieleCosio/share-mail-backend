@@ -1,8 +1,6 @@
 package main
 
-import (
-	"sharemail/internal/server/server"
-)
+import "sharemail/internal/app/server"
 
 func main() {
 	server.Start()

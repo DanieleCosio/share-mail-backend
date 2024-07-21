@@ -20,5 +20,6 @@ type PingResponse struct {
 type GetEmailLinkResponse struct {
 	JsonResponse
 	Url      string `json:"url"`
+	Password string `json:"password"`
 	ExpireAt string `json:"expire_at"`
 }
