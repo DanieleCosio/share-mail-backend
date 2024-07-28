@@ -136,7 +136,7 @@ func getEmailLink(w http.ResponseWriter, r *http.Request) {
 			config.AppConfig["EMAILS_LINKS_PREFIX"],
 			url.Path,
 		),
-		Password: savedEmail.EmailHash[8:],
+		Password: savedEmail.EmailHash[0:8],
 		ExpireAt: expirationDate.Format("2006-01-02 15:04:05"),
 	}
 	jsonResponse.Dispatch(&w, jsonResponse)
