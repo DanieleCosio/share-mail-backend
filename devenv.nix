@@ -2,7 +2,10 @@
 {
   languages.go.enable = true;
 
-  packages = [ pkgs.coreutils pkgs.go-migrate pkgs.sqlc];
+  languages.javascript.enable = true;
+  languages.javascript.package = pkgs.nodejs-18_x;
+
+  packages = [ pkgs.coreutils pkgs.go-migrate pkgs.sqlc ];
 
   services.postgres = {
     enable = true;
