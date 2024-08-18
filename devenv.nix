@@ -16,6 +16,7 @@
     gofmt.enable = true;
     govet.enable = true;
     gotest.enable = true;
+    comitizen.enable = true;
   };
 
   scripts = {
