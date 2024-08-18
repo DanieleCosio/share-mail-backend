@@ -1,0 +1,7 @@
+package button
+
+import "sharemail/internal/app/components"
+
+templ Button(innerText string, onClick string) {
+	<button x-data={ components.JSComponent("button", onClick) } x-on:click="onClick" class="sm_button">{ innerText }</button>
+}
