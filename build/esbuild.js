@@ -7,6 +7,8 @@ const config = {
     bundle: true,
     loader: {
         ".svg": "text",
+        ".css": "text",
+        ".html": "text",
     },
 
     plugins: [
