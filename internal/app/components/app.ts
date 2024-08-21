@@ -1,9 +1,15 @@
-import Alpine from "alpinejs";
-import button from "./atoms/button/button";
+import { demoClickCallback } from "./templates/demo/demo";
+import { MouseEventCallback } from "./types";
+import Btn from "./atoms/btn/Btn";
+
+/* GLOBAL FUNCTIONS */
+declare global {
+    interface Window {
+        demoClickCallback: MouseEventCallback;
+    }
+}
+
+window.demoClickCallback = demoClickCallback;
 
 /* COMPONENTS */
-Alpine.data("button", () => button);
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(window as any).Alpine = Alpine;
-Alpine.start();
+customElements.define(Btn.name, Btn);
