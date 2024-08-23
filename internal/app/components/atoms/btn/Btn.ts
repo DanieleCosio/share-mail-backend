@@ -1,30 +1,15 @@
 import "@webcomponents/custom-elements";
 import BtnHtml from "./Btn.html";
-import { MouseEventCallback } from "../../types";
-import { getNullableSsrValue, getSsrCallback } from "../../utils";
+import { BaseComponent, MouseEventCallback } from "../../types";
+import { getSsrCallback } from "../../utils";
 
-class Btn extends HTMLElement {
+class Btn extends HTMLElement implements BaseComponent {
     private buttonElement: HTMLButtonElement | undefined | null;
     public static name = "sm-btn";
 
     constructor() {
         super();
         console.debug("sm-button constructor executed...");
-    }
-
-    get text(): string {
-        return this.getAttribute("text") || "";
-    }
-
-    set onClick(callback: MouseEventCallback) {
-        if (!this.buttonElement || callback === null) {
-            console.debug("Error: ");
-            console.debug("Element: ", this.buttonElement);
-            console.debug("Callback: ", callback);
-            return;
-        }
-
-        this.buttonElement.addEventListener("click", callback);
     }
 
     connectedCallback() {
@@ -39,14 +24,32 @@ class Btn extends HTMLElement {
             throw new Error("Button not found");
         }
 
-        this.buttonElement.textContent = this.text;
+        if (this.onClickCallbackString) {
+            const callback = getSsrCallback(
+                this.onClickCallbackString,
+            ) as MouseEventCallback;
 
-        const onClickCallback = getNullableSsrValue(this, "click");
-        if (onClickCallback === null) {
-            return;
+            if (callback === null) {
+                console.debug("Error: ");
+                console.debug("Element: ", this.buttonElement);
+                console.debug("Callback: ", callback);
+                return;
+            }
+
+            this.buttonElement.addEventListener("click", callback);
         }
 
-        this.onClick = getSsrCallback(onClickCallback) as MouseEventCallback;
+        if (this.selector) {
+            this.buttonElement.setAttribute("part", this.selector);
+        }
+    }
+
+    get selector(): string {
+        return this.getAttribute("selector") || "";
+    }
+
+    get onClickCallbackString(): string {
+        return this.getAttribute("click") || "";
     }
 }
 

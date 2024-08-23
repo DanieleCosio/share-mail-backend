@@ -1,27 +1,20 @@
 package btn
 
-/* TODO:
-Spostare i webcomponents dell'estensione qua in modo da avere una codebase unica.
-Se si vuole usare il webcompoment in templ creare i bindings in un .templ file.
-Build system deve essere modificato per matchare quello dell'estensione.
-Capire come gestire il css globale.
-*/
-
 type ButtonAttributes struct {
 	InnerText string `json:"innerText"`
 	OnClick   string `json:"onClick"`
-}
-
-func NewButtonAttributes(innerText string, onClick *string) ButtonAttributes {
-	if onClick == nil {
-		onClick = new(string)
-		*onClick = ""
-	}
-
-	attributes := ButtonAttributes{InnerText: innerText, OnClick: *onClick}
-	return attributes
+	Selector  string `json:"selector"`
 }
 
 templ Btn(attributes ButtonAttributes) {
-	<sm-btn text={ attributes.InnerText } click={ attributes.OnClick }></sm-btn>
+	<sm-btn
+		text={ attributes.InnerText }
+		click={ attributes.OnClick }
+		selector={ attributes.Selector }
+	>
+		<div>
+			<span>{ attributes.InnerText }</span>
+			{ children... }
+		</div>
+	</sm-btn>
 }
