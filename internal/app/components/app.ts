@@ -4,6 +4,7 @@ import Btn from "./atoms/btn/Btn";
 import Icon from "./atoms/icon/Icon";
 import Modal from "./molecules/modal/Modal";
 import Loader from "./atoms/loader/Loader";
+import ExtensionModal from "./organisms/extensionModal/extensionModal";
 
 /* GLOBAL FUNCTIONS */
 declare global {
@@ -19,3 +20,4 @@ customElements.define(Btn.name, Btn);
 customElements.define(Icon.name, Icon);
 customElements.define(Modal.name, Modal);
 customElements.define(Loader.name, Loader);
+customElements.define(ExtensionModal.name, ExtensionModal);
