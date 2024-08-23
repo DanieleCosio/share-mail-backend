@@ -1,7 +1,8 @@
 import "@webcomponents/custom-elements";
 import LoaderHtml from "./Loader.html";
+import { BaseComponent } from "../../types";
 
-class Loader extends HTMLElement {
+class Loader extends HTMLElement implements BaseComponent {
     public static name = "sm-loader";
     loader: HTMLElement | null;
 
