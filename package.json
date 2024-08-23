@@ -5,7 +5,7 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "dev": "nodemon  -w 'internal' -e 'ts,css,svg,templ' --exec 'make dev || exit 1'"
+        "dev": "nodemon  -w 'internal' -e 'ts,css,svg,templ,html' --exec 'make dev || exit 1'"
     },
     "repository": {
         "type": "git",
